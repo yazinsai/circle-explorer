@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Circle Explorer — a file explorer that works like a map</title>
+<meta name="description" content="A macOS file explorer that uses concentric rings instead of folders. Free and open source." />
+<meta property="og:title" content="Circle Explorer" />
+<meta property="og:description" content="A file explorer that works like a map, not a list." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://circle-explorer.whhite.com" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230a0a0a'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2360a5fa' stroke-width='2'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%2360a5fa'/%3E%3C/svg%3E" />
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #111;
+    --fg: #ededed;
+    --muted: #888;
+    --accent: #60a5fa;
+    --accent-2: #a78bfa;
+    --card: #141414;
+    --border: #222;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px; border-bottom: 1px solid var(--border);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .logo .dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: radial-gradient(circle, var(--accent) 30%, transparent 33%),
+                radial-gradient(circle, transparent 55%, var(--accent-2) 56%, var(--accent-2) 70%, transparent 72%);
+  }
+  nav a { margin-left: 24px; color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav a:hover { color: var(--fg); }
+
+  /* Hero */
+  .hero { padding: 96px 0 64px; text-align: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
+    font-size: 12px; color: var(--muted); margin-bottom: 24px;
+  }
+  h1 {
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    font-weight: 700;
+  }
+  h1 .grad {
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { font-size: 20px; color: var(--muted); max-width: 620px; margin: 0 auto 36px; }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px; border-radius: 10px;
+    font-weight: 500; font-size: 15px; text-decoration: none;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn-primary {
+    background: var(--fg); color: var(--bg);
+    border: 1px solid var(--fg);
+  }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent; color: var(--fg);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--muted); }
+
+  /* Sunburst demo */
+  .demo-wrap {
+    margin: 72px auto 0;
+    padding: 40px;
+    background: radial-gradient(ellipse at top, rgba(96,165,250,0.06), transparent 60%);
+    display: flex; justify-content: center;
+  }
+  .sunburst {
+    width: min(480px, 90vw); aspect-ratio: 1;
+    animation: rotate 40s linear infinite;
+  }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .sunburst { animation: none; } }
+
+  /* Features */
+  .features {
+    padding: 80px 0;
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .feature {
+    padding: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .feature iconify-icon {
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .feature h3 { margin: 0 0 8px; font-size: 17px; font-weight: 600; }
+  .feature p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* Why section */
+  .why {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+  }
+  .why h2 {
+    font-size: 32px; letter-spacing: -0.01em; margin: 0 0 20px;
+  }
+  .why p { color: var(--muted); font-size: 16px; max-width: 680px; }
+  .why ol { color: var(--muted); max-width: 680px; padding-left: 20px; }
+  .why ol li { margin: 12px 0; }
+  .why ol li strong { color: var(--fg); }
+
+  /* Install */
+  .install { padding: 80px 0; border-top: 1px solid var(--border); text-align: center; }
+  .install h2 { font-size: 32px; letter-spacing: -0.01em; margin: 0 0 16px; }
+  .install p { color: var(--muted); margin: 0 0 24px; }
+  .platforms {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .platform {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 22px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--fg);
+    font-size: 14px;
+    transition: border-color .15s;
+  }
+  .platform:hover { border-color: var(--accent); }
+  .platform iconify-icon { font-size: 20px; }
+
+  footer {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--fg); }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="logo"><span class="dot"></span>Circle Explorer</div>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#install">Download</a>
+    <a href="https://github.com/yazinsai/circle-explorer" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<section class="hero wrap">
+  <div class="eyebrow">
+    <iconify-icon icon="solar:star-bold" style="color:var(--accent-2)"></iconify-icon>
+    Free &amp; open source · macOS first
+  </div>
+  <h1>A file explorer that works<br/>like <span class="grad">a map, not a list</span>.</h1>
+  <p class="sub">Concentric rings replace folders. See three levels of your filesystem at once, with segment size proportional to file size.</p>
+  <div class="cta">
+    <a class="btn btn-primary" href="https://github.com/yazinsai/circle-explorer/releases/latest">
+      <iconify-icon icon="simple-icons:apple"></iconify-icon>
+      Download for macOS
+    </a>
+    <a class="btn btn-secondary" href="https://github.com/yazinsai/circle-explorer">
+      <iconify-icon icon="simple-icons:github"></iconify-icon>
+      View source
+    </a>
+  </div>
+
+  <div class="demo-wrap">
+    <svg class="sunburst" viewBox="-120 -120 240 240" xmlns="http://www.w3.org/2000/svg">
+      <!-- outer ring segments -->
+      <g>
+        <path d="M0,0 L0,-100 A100,100 0 0,1 70.7,-70.7 Z" fill="#60a5fa" opacity="0.9"/>
+        <path d="M0,0 L70.7,-70.7 A100,100 0 0,1 100,0 Z" fill="#a78bfa" opacity="0.85"/>
+        <path d="M0,0 L100,0 A100,100 0 0,1 70.7,70.7 Z" fill="#34d399" opacity="0.8"/>
+        <path d="M0,0 L70.7,70.7 A100,100 0 0,1 0,100 Z" fill="#fbbf24" opacity="0.85"/>
+        <path d="M0,0 L0,100 A100,100 0 0,1 -70.7,70.7 Z" fill="#f87171" opacity="0.8"/>
+        <path d="M0,0 L-70.7,70.7 A100,100 0 0,1 -100,0 Z" fill="#f472b6" opacity="0.85"/>
+        <path d="M0,0 L-100,0 A100,100 0 0,1 -70.7,-70.7 Z" fill="#22d3ee" opacity="0.8"/>
+        <path d="M0,0 L-70.7,-70.7 A100,100 0 0,1 0,-100 Z" fill="#818cf8" opacity="0.85"/>
+      </g>
+      <!-- inner ring -->
+      <g>
+        <path d="M0,0 L0,-60 A60,60 0 0,1 60,0 Z" fill="#60a5fa"/>
+        <path d="M0,0 L60,0 A60,60 0 0,1 0,60 Z" fill="#a78bfa"/>
+        <path d="M0,0 L0,60 A60,60 0 0,1 -60,0 Z" fill="#34d399"/>
+        <path d="M0,0 L-60,0 A60,60 0 0,1 0,-60 Z" fill="#fbbf24"/>
+      </g>
+      <!-- center -->
+      <circle r="30" fill="#0a0a0a"/>
+      <circle r="30" fill="none" stroke="#fff" stroke-opacity="0.15" stroke-width="1"/>
+      <text y="5" text-anchor="middle" fill="#ededed" font-size="11" font-family="monospace">~/</text>
+    </svg>
+  </div>
+</section>
+
+<section id="features" class="wrap features">
+  <div class="feature">
+    <iconify-icon icon="solar:atom-bold-duotone"></iconify-icon>
+    <h3>Concentric rings</h3>
+    <p>Center is your current folder. First ring: children. Second ring: grandchildren. Three levels at a glance.</p>
+  </div>
+  <div class="feature">
+    <iconify-icon icon="solar:palette-bold-duotone"></iconify-icon>
+    <h3>Color-coded by type</h3>
+    <p>60+ extensions mapped to colors. Code is green, images blue, docs yellow, media purple. Scan a directory in one glance.</p>
+  </div>
+  <div class="feature">
+    <iconify-icon icon="solar:layers-bold-duotone"></iconify-icon>
+    <h3>Flat-folder grouping</h3>
+    <p>Directories with 100s of files? Top 15 shown, the rest collapse into one segment. Never overwhelming.</p>
+  </div>
+  <div class="feature">
+    <iconify-icon icon="solar:magic-stick-3-bold-duotone"></iconify-icon>
+    <h3>Smooth 350ms transitions</h3>
+    <p>Cubic easing on every navigation. The feel is the product.</p>
+  </div>
+  <div class="feature">
+    <iconify-icon icon="solar:list-check-bold-duotone"></iconify-icon>
+    <h3>List view escape hatch</h3>
+    <p>One click to switch to a traditional sortable table. No shame, no friction.</p>
+  </div>
+  <div class="feature">
+    <iconify-icon icon="solar:shield-check-bold-duotone"></iconify-icon>
+    <h3>Read-only &amp; tiny</h3>
+    <p>Can't modify, move, or delete anything. 8MB binary, 3MB DMG. Tauri, not Electron.</p>
+  </div>
+</section>
+
+<section class="why wrap">
+  <h2>Why build this?</h2>
+  <p>Every file explorer since 1984 uses lists and trees. Every sunburst tool (DaisyDisk, Filelight, Baobab) is a disk <em>analyzer</em>, not a file <em>browser</em>. The one attempt to bridge them — Spyglass (Windows, ~2013) — was called "not really practicable."</p>
+  <p>Circle Explorer is a second attempt, with three specific improvements:</p>
+  <ol>
+    <li><strong>Flat-folder grouping</strong> — directly addresses Spyglass's #1 usability issue.</li>
+    <li><strong>Smooth animations</strong> — 350ms cubic transitions on every navigation.</li>
+    <li><strong>List view escape hatch</strong> — always one click away when rings aren't the right tool.</li>
+  </ol>
+</section>
+
+<section id="install" class="install wrap">
+  <h2>Install it</h2>
+  <p>Signed &amp; notarized builds. Just download and drag to Applications.</p>
+  <div class="platforms">
+    <a class="platform" href="https://github.com/yazinsai/circle-explorer/releases/latest">
+      <iconify-icon icon="simple-icons:apple"></iconify-icon> macOS (Apple Silicon)
+    </a>
+    <a class="platform" href="https://github.com/yazinsai/circle-explorer/releases/latest">
+      <iconify-icon icon="simple-icons:apple"></iconify-icon> macOS (Intel)
+    </a>
+    <a class="platform" href="https://github.com/yazinsai/circle-explorer/releases/latest">
+      <iconify-icon icon="simple-icons:linux" style="color:#fbbf24"></iconify-icon> Linux
+    </a>
+    <a class="platform" href="https://github.com/yazinsai/circle-explorer/releases/latest">
+      <iconify-icon icon="simple-icons:windows" style="color:#60a5fa"></iconify-icon> Windows
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Made by <a href="https://github.com/yazinsai">@yazinsai</a> ·
+    <a href="https://github.com/yazinsai/circle-explorer">Source</a> ·
+    <a href="https://github.com/yazinsai/circle-explorer/blob/main/LICENSE">MIT</a>
+  </div>
+</footer>
+
+</body>
+</html>
