@@ -1,0 +1,30 @@
+# Dependencies
+node_modules
+
+# Build output
+/build
+/.svelte-kit
+/package
+
+# Rust/Tauri build
+src-tauri/target/
+src-tauri/gen/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.DS_Store
+.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# OS
+Thumbs.db

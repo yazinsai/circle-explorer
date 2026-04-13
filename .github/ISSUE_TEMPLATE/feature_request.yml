@@ -1,0 +1,29 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "Feature: "
+labels: ["feature-request"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like?
+      description: Describe the feature or improvement
+      placeholder: "It would be great if..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: When/why would you use this?
+      placeholder: "I need this when..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      options:
+        - Nice to have
+        - Would significantly improve my experience
+        - I can't use the app without it
